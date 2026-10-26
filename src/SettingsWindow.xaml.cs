@@ -66,6 +66,8 @@ namespace GeminiLauncher
             RegionBox.Text = S.TrendsRegion;
             foreach (var t in new[] { "System default", "Light", "Dark" }) ThemeBox.Items.Add(t);
             ThemeBox.SelectedIndex = S.Theme == "light" ? 1 : S.Theme == "dark" ? 2 : 0;
+            foreach (var t in new[] { "Google results", "Gemini answer" }) WebPreviewBox.Items.Add(t);
+            WebPreviewBox.SelectedIndex = S.GoogleFirst ? 0 : 1;
             VersionText.Text = "Gemini Launcher " + typeof(App).Assembly.GetName().Version.ToString(3) +
                                (Settings.IsElevated ? "  ·  running with admin rights" : "") + "  ·  Region " + S.EffectiveRegion;
         }
@@ -150,6 +152,7 @@ namespace GeminiLauncher
             S.SearchFileContents = ContentsBox.IsChecked == true;
             S.ShowTrending = TrendingBox.IsChecked == true;
             S.TrendsRegion = (RegionBox.Text ?? "").Trim().ToUpperInvariant();
+            S.WebPreview = WebPreviewBox.SelectedIndex == 1 ? "gemini" : "google";
             var theme = ThemeBox.SelectedIndex == 1 ? "light" : ThemeBox.SelectedIndex == 2 ? "dark" : "system";
             bool themeChanged = theme != S.Theme;
             S.Theme = theme;

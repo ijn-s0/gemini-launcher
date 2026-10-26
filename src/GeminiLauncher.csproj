@@ -22,6 +22,9 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+    <!-- Google results page inside the launcher. Only compiled against here: the DLLs are packed into the exe
+         (see EmbedWebView2 below), so GeminiLauncher.exe stays a single file. -->
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4314.35" GeneratePathProperty="true" ExcludeAssets="runtime;build;buildTransitive" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Net.Http" />
@@ -35,4 +38,50 @@
   <ItemGroup>
     <Resource Include="app.ico" />
   </ItemGroup>
+
+  <!-- WebView2 files embedded (gzip) in the exe; WebView2Deps.cs unpacks them at run time. -->
+  <ItemGroup>
+    <WebView2Embed Include="$(PkgMicrosoft_Web_WebView2)\lib\net462\Microsoft.Web.WebView2.Core.dll" LogicalName="wv2.Microsoft.Web.WebView2.Core.dll" />
+    <WebView2Embed Include="$(PkgMicrosoft_Web_WebView2)\lib\net462\Microsoft.Web.WebView2.Wpf.dll" LogicalName="wv2.Microsoft.Web.WebView2.Wpf.dll" />
+    <WebView2Embed Include="$(PkgMicrosoft_Web_WebView2)\runtimes\win-x64\native\WebView2Loader.dll" LogicalName="wv2.x64.WebView2Loader.dll" />
+    <WebView2Embed Include="$(PkgMicrosoft_Web_WebView2)\runtimes\win-x86\native\WebView2Loader.dll" LogicalName="wv2.x86.WebView2Loader.dll" />
+    <WebView2Embed Include="$(PkgMicrosoft_Web_WebView2)\runtimes\win-arm64\native\WebView2Loader.dll" LogicalName="wv2.arm64.WebView2Loader.dll" />
+  </ItemGroup>
+
+  <UsingTask TaskName="GzipForEmbed" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <Files ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+      <OutDir ParameterType="System.String" Required="true" />
+      <Result ParameterType="Microsoft.Build.Framework.ITaskItem[]" Output="true" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.IO.Compression" />
+      <Code Type="Fragment" Language="cs"><![CDATA[
+        Directory.CreateDirectory(OutDir);
+        var list = new System.Collections.Generic.List<Microsoft.Build.Framework.ITaskItem>();
+        foreach (var f in Files)
+        {
+            if (!File.Exists(f.ItemSpec)) { Log.LogError("WebView2 file not found: " + f.ItemSpec); continue; }
+            var name = f.GetMetadata("LogicalName") + ".gz";
+            var dst = Path.Combine(OutDir, name);
+            if (!File.Exists(dst) || File.GetLastWriteTimeUtc(dst) < File.GetLastWriteTimeUtc(f.ItemSpec))
+                using (var i = File.OpenRead(f.ItemSpec))
+                using (var o = File.Create(dst))
+                using (var g = new GZipStream(o, CompressionLevel.Optimal))
+                    i.CopyTo(g);
+            var item = new Microsoft.Build.Utilities.TaskItem(dst);
+            item.SetMetadata("LogicalName", name);
+            list.Add(item);
+        }
+        Result = list.ToArray();
+      ]]></Code>
+    </Task>
+  </UsingTask>
+
+  <Target Name="EmbedWebView2" BeforeTargets="BeforeBuild">
+    <GzipForEmbed Files="@(WebView2Embed)" OutDir="$(IntermediateOutputPath)wv2">
+      <Output TaskParameter="Result" ItemName="EmbeddedResource" />
+    </GzipForEmbed>
+  </Target>
 </Project>

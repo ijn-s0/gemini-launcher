@@ -274,8 +274,8 @@
         <!-- RESULTS VIEW -->
         <Grid x:Name="ResultsView" Grid.Row="1" Margin="24,0,24,0" Visibility="Collapsed">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="320"/>
-                <ColumnDefinition Width="14"/>
+                <ColumnDefinition x:Name="ListColumn" Width="320"/>
+                <ColumnDefinition x:Name="GapColumn" Width="14"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <ListBox x:Name="ResultsList" Background="Transparent" BorderThickness="0" Focusable="False"
@@ -327,6 +327,43 @@
                                         <Path Data="{x:Static local:Glyphs.Globe}" Stroke="{DynamicResource Fg1}" StrokeThickness="1.2" Stretch="Uniform" Width="12" Height="12" Margin="0,0,6,0"/>
                                         <TextBlock Text="Open in Google" FontSize="12"/>
                                     </StackPanel>
+                                </Button>
+                            </StackPanel>
+                        </Grid>
+                    </Grid>
+
+                    <!-- Google results page (WebView2 is added to GoogleHost in code) -->
+                    <Grid x:Name="GooglePanel" Visibility="Collapsed">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid Grid.Row="0" Margin="16,7,7,5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <Path Data="{x:Static local:Glyphs.Globe}" Stroke="{DynamicResource Fg2}" StrokeThickness="1.3" Stretch="Uniform" Width="14" Height="14" VerticalAlignment="Center"/>
+                                <TextBlock Text="Google" FontWeight="SemiBold" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                                <TextBlock x:Name="GoogleStatus" Margin="10,0,0,0" Foreground="{DynamicResource Fg3}" FontSize="12" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                <Button x:Name="GoogleExpandButton" Style="{StaticResource SubtleButton}" Padding="8,6" Click="GoogleExpand_Click" Focusable="False" ToolTip="Full-size page (Enter or Ctrl+E)">
+                                    <Path x:Name="GoogleExpandGlyph" Data="{x:Static local:Glyphs.Expand}" Stroke="{DynamicResource Fg1}" StrokeThickness="1.3" Stretch="Uniform" Width="12" Height="12"
+                                          StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"/>
+                                </Button>
+                                <Button Style="{StaticResource FluentButton}" Padding="10,4" Margin="4,0,0,0" Click="OpenGoogle_Click" Focusable="False" ToolTip="Ctrl+Enter">
+                                    <TextBlock Text="Open in browser" FontSize="12"/>
+                                </Button>
+                            </StackPanel>
+                        </Grid>
+                        <Grid x:Name="GoogleHost" Grid.Row="1" Margin="5,0,5,5">
+                            <StackPanel x:Name="GoogleMessagePanel" VerticalAlignment="Center" Margin="18,0">
+                                <TextBlock x:Name="GoogleMessage" TextWrapping="Wrap" TextAlignment="Center" Foreground="{DynamicResource Fg2}" Text="Loading Google…"/>
+                                <Button x:Name="GoogleInstallButton" Style="{StaticResource FluentButton}" HorizontalAlignment="Center" Margin="0,14,0,0" Padding="12,6"
+                                        Click="InstallWebView2_Click" Focusable="False" Visibility="Collapsed">
+                                    <TextBlock Text="Get WebView2 from Microsoft" FontSize="12"/>
                                 </Button>
                             </StackPanel>
                         </Grid>

@@ -23,6 +23,9 @@ namespace GeminiLauncher
         SettingsWindow _settingsWin;
         long _lastToggle;
 
+        // Before anything can touch a WebView2 type: lets the packed WebView2 DLLs load from inside the exe.
+        static App() { WebView2Deps.Init(); }
+
         const string MutexName = "GeminiLauncher.SingleInstance";
         const string SignalName = "GeminiLauncher.Show";
 

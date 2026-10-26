@@ -125,7 +125,7 @@
                         <CheckBox x:Name="InstantBox" Style="{StaticResource ToggleSwitch}">
                             <StackPanel>
                                 <TextBlock Text="Instant answers while typing"/>
-                                <TextBlock Style="{StaticResource Desc}" Text="When you pause typing and no app or file is an obvious match, Gemini answers automatically. Turn off to only ask when you press Enter (saves API quota)."/>
+                                <TextBlock Style="{StaticResource Desc}" Text="When you pause typing with the Gemini row selected, Gemini answers automatically. Turn off to only ask when you press Enter (saves API quota)."/>
                             </StackPanel>
                         </CheckBox>
                         <Grid Margin="0,12,0,0">
@@ -192,6 +192,19 @@
 
                 <!-- Search -->
                 <TextBlock Text="Search &amp; recommendations" Style="{StaticResource Section}"/>
+                <Border Style="{StaticResource Card}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="220"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel VerticalAlignment="Center" Margin="0,0,12,0">
+                            <TextBlock Text="When you search the web, show"/>
+                            <TextBlock Style="{StaticResource Desc}" Text="Google results: the real Google results page, right in the launcher. Press Enter for the full-size page and Ctrl+Enter to open it in your browser. Gemini answer: an AI answer grounded in Google Search. The other one is always one row below."/>
+                        </StackPanel>
+                        <ComboBox x:Name="WebPreviewBox" Grid.Column="1" Style="{StaticResource FluentCombo}" VerticalAlignment="Center"/>
+                    </Grid>
+                </Border>
                 <Border Style="{StaticResource Card}">
                     <CheckBox x:Name="ContentsBox" Style="{StaticResource ToggleSwitch}">
                         <StackPanel>

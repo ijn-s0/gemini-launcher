@@ -35,6 +35,9 @@ namespace GeminiLauncher
         public bool ShowTrending = true;
         public string TrendsRegion = "";
         public string Theme = "system"; // system | dark | light
+        /// <summary>What the preview shows for a web search while you type: "google" (results page) or "gemini" (AI answer).</summary>
+        public string WebPreview = "google";
+        public bool GoogleFirst => WebPreview != "gemini";
         public bool FirstRunDone;
         public bool DefaultPinsDone;
         public List<Pin> Pins = new List<Pin>();
@@ -83,6 +86,7 @@ namespace GeminiLauncher
                 s.ShowTrending = o.Bool("showTrending", s.ShowTrending);
                 s.TrendsRegion = o.Str("trendsRegion") ?? "";
                 s.Theme = o.Str("theme") ?? "system";
+                s.WebPreview = o.Str("webPreview") == "gemini" ? "gemini" : "google";
                 s.FirstRunDone = o.Bool("firstRunDone");
                 s.DefaultPinsDone = o.Bool("defaultPinsDone");
                 foreach (var p in o.Get("pins").Arr())
@@ -123,6 +127,7 @@ namespace GeminiLauncher
                     ["showTrending"] = ShowTrending,
                     ["trendsRegion"] = TrendsRegion,
                     ["theme"] = Theme,
+                    ["webPreview"] = WebPreview,
                     ["firstRunDone"] = FirstRunDone,
                     ["defaultPinsDone"] = DefaultPinsDone,
                     ["pins"] = Pins.Select(p => (object)new Dictionary<string, object> { ["kind"] = p.Kind, ["name"] = p.Name, ["target"] = p.Target }).ToList(),
